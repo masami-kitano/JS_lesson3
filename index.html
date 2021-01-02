@@ -30,50 +30,62 @@
             <input type="button" id="addBtn" value="追加">
         </form>
         <script>
-            const addBtn = document.getElementById("addBtn");
-            addBtn.addEventListener("click", addTask, false);
-
             const doing = "作業中";
             const done = "完了";
 
             const tasks = []
 
+            const addBtn = document.getElementById("addBtn");
+            addBtn.addEventListener("click", addTask, false);
+
             function addTask() {
                 const newTask = document.getElementById("newTask").value;
 
-                if(newTask === "") {
-                    alert("タスクを追加できませんでした。")
-                } else {
+                if(newTask) {
                     tasks.push({comment: newTask, state: doing});
+
                     const taskTotal = tasks.length;
 
                     let taskTable = document.getElementById("taskTable");
-                    
                     let taskRow = taskTable.insertRow();
 
                     let taskCell = taskRow.insertCell();
-                    let taskItem = document.createTextNode(taskTotal);
+                    let taskItem = document.createTextNode(taskTotal - 1);
                     taskCell.appendChild(taskItem);
 
                     taskCell = taskRow.insertCell();
-                    taskItem = document.createTextNode(newTask);
-                    taskCell.appendChild(taskItem);
+                    showTask(taskItem, newTask, taskCell);
 
                     taskCell = taskRow.insertCell();
-                    taskItem = document.createElement("input");
-                    taskItem.setAttribute("type","button"); 
-                    taskItem.setAttribute("value",doing);
-                    taskCell.appendChild(taskItem);
+                    createStateBtn(taskItem, taskCell);
 
                     taskCell = taskRow.insertCell();
-                    taskItem = document.createElement("input");
-                    taskItem.setAttribute("type","button"); 
-                    taskItem.setAttribute("value","削除");
-                    taskCell.appendChild(taskItem);
+                    createDeleteBtn(taskItem, taskCell);
 
                     const taskForm = document.getElementById("newTask");
                     taskForm.value = ""
+                } else {
+                    alert("タスクを追加できませんでした。")
                 }
+            }
+
+            function showTask(taskItem, newTask, taskCell) {
+                taskItem = document.createTextNode(newTask);
+                taskCell.appendChild(taskItem);
+            }
+
+            function createStateBtn(taskItem, taskCell) {
+                taskItem = document.createElement("input");
+                taskItem.setAttribute("type","button"); 
+                taskItem.setAttribute("value",doing);
+                taskCell.appendChild(taskItem);
+            }
+
+            function createDeleteBtn(taskItem, taskCell) {
+                taskItem = document.createElement("input");
+                taskItem.setAttribute("type","button"); 
+                taskItem.setAttribute("value","削除");
+                taskCell.appendChild(taskItem);
             }
         </script>
     </body>
