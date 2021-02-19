@@ -9,9 +9,9 @@
 <body>
     <h1>ToDoリスト</h1>
     <form id="target" action="#">
-        <input name="all" type="radio" value="すべて" checked="checked"> すべて
-        <input name="doing" type="radio" value="作業中"> 作業中
-        <input name="done" type="radio" value="完了"> 完了
+        <input name="radioButton" type="radio" value="すべて" id="allSelect" checked> すべて
+        <input name="radioButton" type="radio" value="作業中" id="doingSelect"> 作業中
+        <input name="radioButton" type="radio" value="完了" id="doneSelect"> 完了
     </form>
     <form action="#">
         <table id="taskTable">
@@ -54,7 +54,7 @@
                 const taskForm = document.getElementById("newTask");
                 taskForm.value = "";
 
-                showTask(tasks);
+                filterTasks();
             } else {
                 alert("タスクを追加できませんでした。")
             }
@@ -65,6 +65,11 @@
 
             tasks.forEach((task, index) => {
                 const taskRecord = taskTableBody.insertRow();
+                if (task.state === doing) {
+                    taskRecord.className = "doingRecord";
+                } else if (task.state === done) {
+                    taskRecord.className = "doneRecord";
+                }
 
                 let taskCell = taskRecord.insertCell();
                 let taskItem = document.createTextNode(index);
@@ -75,15 +80,16 @@
                 taskCell.appendChild(taskItem);
 
                 taskCell = taskRecord.insertCell();
-                createStateBtn(task, taskCell, index);
+                createStateBtn(task, taskCell, index, taskRecord);
 
                 taskCell = taskRecord.insertCell();
                 createDeleteBtn(taskItem, taskCell, index);
             })
         }
 
-        const createStateBtn = (taskItem, taskCell, index) => {
+        const createStateBtn = (taskItem, taskCell, index, taskRecord) => {
             taskItem = document.createElement("input");
+            taskItem.setAttribute("name", tasks[index].state);
             taskItem.setAttribute("type", "button");
             taskItem.setAttribute("value", tasks[index].state);
             taskCell.appendChild(taskItem);
@@ -91,8 +97,12 @@
             taskItem.addEventListener("click", () => {
                 if (taskItem.value === doing) {
                     taskItem.value = tasks[index].state = done;
+                    taskRecord.className = "doneRecord";
+                    filterTasks();
                 } else {
                     taskItem.value = tasks[index].state = doing;
+                    taskRecord.className = "doingRecord";
+                    filterTasks();
                 }
             });
         }
@@ -106,9 +116,38 @@
 
             taskItem.addEventListener("click", () => {
                 tasks.splice(index, 1);
-                showTask(tasks);
+                filterTasks();
             });
         }
+
+        const radioButtonAll = document.getElementById("allSelect");
+        const radioButtonDoing = document.getElementById("doingSelect");
+        const radioButtonDone = document.getElementById("doneSelect");
+
+        const filterTasks = () => {
+            const doingRecords = document.getElementsByClassName("doingRecord");
+            const doneRecords = document.getElementsByClassName("doneRecord");
+            showTask(tasks);
+
+            if (radioButtonAll.checked) {
+                return;
+            } else if (radioButtonDoing.checked) {
+                for (let i = 0; i < doneRecords.length; i++) {
+                    doneRecords[i].style.display = "none";
+                }
+            } else if (radioButtonDone.checked) {
+                for (let i = 0; i < doingRecords.length; i++) {
+                    doingRecords[i].style.display = "none";
+                }
+            }
+        }
+
+        const radioButtons = document.getElementsByName("radioButton");
+        radioButtons.forEach((radioButton, index) => {
+            radioButtons[index].addEventListener("click", () => {
+                filterTasks();
+            });
+        });
     </script>
 </body>
 
